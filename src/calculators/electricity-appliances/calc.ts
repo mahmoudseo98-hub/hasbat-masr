@@ -50,7 +50,8 @@ export const definition: CalculatorDefinition = {
       added = kwh * price;
       breakdown.push({ label: `التكلفة بسعر ثابت ${formatNumber(input.price as number)} قرش`, value: formatEGP(added), emphasis: true });
     } else {
-      const before = residentialBill(base);
+      // No base given → appliance alone; don't subtract the 9 EGP zero-consumption fee.
+      const before = base > 0 ? residentialBill(base) : { energy: 0, fee: 0, band: "" };
       const after = residentialBill(base + kwh);
       added = after.energy + after.fee - (before.energy + before.fee);
       if (base > 0) breakdown.push({ label: `فاتورتك من غير الجهاز (${formatNumber(base)} ك.و.س) — ${before.band}`, value: formatEGP(before.energy + before.fee) });

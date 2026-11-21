@@ -1,5 +1,14 @@
 import type { CalculatorContent } from "../types.ts";
-import { RATES_CHECKED, SOURCES } from "./rules.ts";
+import { formatNumber as n, formatPercent as pct } from "../../lib/format.ts";
+import { CERTIFICATES, PAYOUT_LABEL, RATES_CHECKED, SOURCES } from "./rules.ts";
+
+// Built from rules.ts so the table can't drift from the calculator presets.
+const certRows = CERTIFICATES.map((c) => [
+  `${c.bank} — ${c.name}`,
+  `${n(c.yearlyRates.length)} سنين`,
+  new Set(c.yearlyRates).size > 1 ? c.yearlyRates.map((r) => pct(r)).join(" ← ") : pct(c.yearlyRates[0]),
+  PAYOUT_LABEL[c.payout],
+]);
 
 export const content: CalculatorContent = {
   id: "bank-certificates",
@@ -19,7 +28,7 @@ export const content: CalculatorContent = {
   methodology: [
     { type: "p", text: "البنوك المصرية بتحسب عائد الشهادات بالفائدة البسيطة على أصل المبلغ: العائد السنوي = المبلغ × سعر العائد. ولو الصرف شهري بيتقسم على 12، وربع سنوي على 4." },
     { type: "p", text: "في الشهادات المتناقصة (زي ابن مصر والبلاتينية المتدرجة) كل سنة ليها سعر أقل من اللي قبلها، فبنحسب كل سنة بسعرها ونجمع." },
-    { type: "table", head: ["الشهادة", "المدة", "العائد", "الصرف"], rows: [["بنك مصر — القمة", "3 سنين", "18.75% / 18.85%", "شهري / ربع سنوي"], ["بنك مصر — ابن مصر المتناقصة", "3 سنين", "20.5% ← 16.25% ← 12.25%", "شهري"], ["الأهلي — البلاتينية الثابتة", "3 سنين", "18.75% / 18.85%", "شهري / ربع سنوي"], ["الأهلي — البلاتينية المتدرجة", "3 سنين", "21% ← 16.25% ← 12%", "شهري"], ["الأهلي — الخماسية", "5 سنين", "14.25%", "شهري"]] },
+    { type: "table", head: ["الشهادة", "المدة", "العائد", "الصرف"], rows: certRows },
     { type: "p", text: "العائد معفى من ضريبة الدخل للأفراد حسب المادة 31 بند 5 من قانون الضريبة على الدخل 91 لسنة 2005، فاللي بتحسبه هو اللي بتقبضه." },
     { type: "p", text: "الشهادات ذات العائد المتغير مش في القائمة لأن عائدها بيتغير مع قرارات البنك المركزي؛ لو عايز تحسبها اختار «شهادة تانية» واكتب سعرها الحالي، مع العلم إن النتيجة بتفترض إن السعر هيفضل ثابت." },
   ],

@@ -1,5 +1,18 @@
 import type { CalculatorContent } from "../types.ts";
-import { LAST_UPDATED, SOURCES } from "./rules.ts";
+import { formatNumber as n, formatPercent as pct } from "../../lib/format.ts";
+import { LAST_UPDATED, SOURCES, YEARS } from "./rules.ts";
+
+// Tables are built from rules.ts so they can't drift from the calculation.
+const current = YEARS[0];
+const total = (xs: { rate: number }[]) => xs.reduce((s, x) => s + x.rate, 0);
+const branchRows = [
+  ...current.employer.map((e) => {
+    const emp = current.employee.find((x) => x.label === e.label);
+    return [e.label, pct(e.rate), emp ? pct(emp.rate) : "—"];
+  }),
+  [`الإجمالي ${current.year}`, pct(total(current.employer)), pct(total(current.employee))],
+];
+const limitRows = YEARS.map((y) => [String(y.year), n(y.minWage), n(y.maxWage), y.confidence === "official" ? "رسمي (الهيئة القومية للتأمين الاجتماعي)" : "معلن إعلاميًا عن رئيس الهيئة"]);
 
 export const content: CalculatorContent = {
   id: "social-insurance",
@@ -19,9 +32,9 @@ export const content: CalculatorContent = {
   ],
   methodology: [
     { type: "p", text: "أجر الاشتراك المحتسب = أجرك بعد تطبيق الحدود: لو أقل من الحد الأدنى بيتحسب على الحد الأدنى، ولو أكبر من الحد الأقصى بيتحسب على الحد الأقصى. بعدها بتتطبق نسب قانون التأمينات الاجتماعية 148 لسنة 2019:" },
-    { type: "table", head: ["نوع التأمين", "صاحب العمل", "الموظف"], rows: [["الشيخوخة والعجز والوفاة (م 19)", "12%", "9%"], ["مكافأة نهاية الخدمة (م 36)", "1%", "1%"], ["إصابات العمل (م 46)", "1.5%", "—"], ["المرض (م 70)", "3.25%", "1%"], ["البطالة (م 86)", "1%", "—"], ["الإجمالي 2026", "18.75%", "11%"]] },
+    { type: "table", head: ["نوع التأمين", "صاحب العمل", "الموظف"], rows: branchRows },
     { type: "p", text: "المادة 19 بتزوّد نسبة اشتراك الشيخوخة 1% كل 7 سنين تتقسم بالنص بين الطرفين، فمن 1 يناير 2027 بتبقى 12.5% على صاحب العمل و9.5% على الموظف (الإجمالي 19.25% و11.5%)." },
-    { type: "table", head: ["السنة", "الحد الأدنى لأجر الاشتراك", "الحد الأقصى", "الحالة"], rows: [["2025", "2,300", "14,500", "رسمي"], ["2026", "2,700", "16,700", "رسمي (الهيئة القومية للتأمين الاجتماعي)"], ["2027", "3,200", "19,300", "معلن إعلاميًا عن رئيس الهيئة"]] },
+    { type: "table", head: ["السنة", "الحد الأدنى لأجر الاشتراك", "الحد الأقصى", "الحالة"], rows: limitRows },
     { type: "p", text: "أصحاب الأعمال ومن في حكمهم والمصريين بالخارج بيدفعوا 21% من دخل اشتراك بيختاروه بين الحد الأدنى والأقصى، وبيدفعوه كامل لوحدهم." },
   ],
   example: {
