@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Fully static site: no Cache Components, so unknown slugs get a real 404 via dynamicParams=false.
   turbopack: {
     rules: {
       "*.css": {
