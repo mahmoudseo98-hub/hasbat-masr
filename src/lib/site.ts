@@ -1,4 +1,9 @@
 // Site-wide settings. Everything environment-specific comes from env vars (see .env.example).
+// Canonicals, sitemap and OG URLs depend on this; a silent localhost fallback in production would deindex the site.
+if (process.env.NODE_ENV === "production" && !process.env.NEXT_PUBLIC_SITE_URL) {
+  throw new Error("NEXT_PUBLIC_SITE_URL is required for production builds (see .env.example)");
+}
+
 export const SITE = {
   name: "حاسبات مصر",
   tagline: "حاسبات مصرية دقيقة بمصادر رسمية",

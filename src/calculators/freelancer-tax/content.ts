@@ -1,5 +1,18 @@
 import type { CalculatorContent } from "../types.ts";
-import { LAST_UPDATED, SOURCES } from "./rules.ts";
+import { formatNumber as n, formatPercent as pct } from "../../lib/format.ts";
+import { BRACKETS, LAST_UPDATED, SIMPLIFIED_BANDS, SOURCES } from "./rules.ts";
+
+// Tables are built from rules.ts so they can't drift from the calculation.
+const bracketRows = BRACKETS.map((b, i) => {
+  const from = i ? BRACKETS[i - 1].upTo : 0;
+  const range = i === 0 ? `حتى ${n(b.upTo)} جنيه` : b.upTo === Infinity ? `أكثر من ${n(from)}` : `${n(from)} – ${n(b.upTo)}`;
+  return [range, pct(b.rate, 1)];
+});
+const bandRows = SIMPLIFIED_BANDS.map((b, i, all) => {
+  const from = i ? all[i - 1].below : 0;
+  const range = i === 0 ? `أقل من ${n(b.below)} جنيه` : i === all.length - 1 ? `${n(from)} – ${n(b.below)}` : `${n(from)} – أقل من ${n(b.below)}`;
+  return [range, pct(b.rate, 2)];
+});
 
 export const content: CalculatorContent = {
   id: "freelancer-tax",
@@ -20,12 +33,12 @@ export const content: CalculatorContent = {
   methodology: [
     { type: "h3", text: "النظام العادي: شرائح ضريبة الدخل" },
     { type: "p", text: "صافي الربح = الإيرادات − التكاليف، وبيتقرّب لأقرب 10 جنيه أقل. بعدها بتتطبق شرائح المادة 8 من قانون الضريبة على الدخل كما عدّلها القانون 7 لسنة 2024:" },
-    { type: "table", head: ["صافي الدخل السنوي", "النسبة"], rows: [["حتى 40,000 جنيه", "0%"], ["40,000 – 55,000", "10%"], ["55,000 – 70,000", "15%"], ["70,000 – 200,000", "20%"], ["200,000 – 400,000", "22.5%"], ["400,000 – 1,200,000", "25%"], ["أكثر من 1,200,000", "27.5%"]] },
+    { type: "table", head: ["صافي الدخل السنوي", "النسبة"], rows: bracketRows },
     { type: "p", text: "مهم: لو صافي دخلك عدّى 600 ألف جنيه بتتحرم من الشريحة المعفاة، وفوق 700 ألف من شريحة 10%، وفوق 800 ألف من 15%، وفوق 900 ألف من 20%، وفوق 1.2 مليون بيتحسب أول 1.2 مليون بـ25% والباقي بـ27.5%." },
     { type: "p", text: "خصم التكاليف: أصحاب المهن الحرة اللي بيمسكوا دفاتر منتظمة بيخصموا تكاليفهم الفعلية، واللي مش بيمسكوا دفاتر بيتخصم لهم 10% من الإيراد مقابل كل التكاليف (المادة 35)." },
     { type: "h3", text: "النظام المبسط: نسبة من حجم الأعمال" },
     { type: "p", text: "القانون 6 لسنة 2025 (ساري من 1 مارس 2025) بيحسب الضريبة كنسبة واحدة من إجمالي الإيراد السنوي من غير خصم تكاليف، والأنشطة المهنية داخلة فيه:" },
-    { type: "table", head: ["حجم الأعمال السنوي", "النسبة على الإيراد كله"], rows: [["أقل من 500 ألف جنيه", "0.4%"], ["500 ألف – أقل من 2 مليون", "0.5%"], ["2 مليون – أقل من 3 مليون", "0.75%"], ["3 مليون – أقل من 10 مليون", "1%"], ["10 مليون – 20 مليون", "1.5%"]] },
+    { type: "table", head: ["حجم الأعمال السنوي", "النسبة على الإيراد كله"], rows: bandRows },
     { type: "p", text: "شروطه: تقديم طلب الانضمام، والتسجيل في منظومة الفاتورة أو الإيصال الإلكتروني، والالتزام بيه 5 سنين. ومستبعد منه الاستشارات المهنية اللي 90% أو أكتر من إيرادها من عميل أو اتنين." },
   ],
   example: {

@@ -47,3 +47,9 @@ test("content example: AC adds ≈1,122 EGP to a 400 kWh home", () => {
   const before = residentialBill(400), after = residentialBill(712);
   close(after.energy + after.fee - before.energy - before.fee, 1121.8);
 });
+test("no household consumption given: cost equals the appliance's own bill (no zero-consumption fee subtracted)", () => {
+  const { parsed } = parseValues(definition.fields, { appliance: "ac15", quantity: "1", hours: "8", days: "30", base: "", tariff: "aug2026" });
+  const out = definition.compute(parsed);
+  const alone = residentialBill(312);
+  assert.ok(out.ok && out.headline.value.startsWith(new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(alone.energy + alone.fee))); // 434
+});

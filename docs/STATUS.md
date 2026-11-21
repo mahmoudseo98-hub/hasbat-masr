@@ -1,8 +1,8 @@
 # Status — 2026-11-21
 
 ## Test results (executed)
-- Unit: `npm test` → 38/38 pass (5 calculators: formulas, published reference values, bracket/band boundaries, invalid input).
-- E2E: `npm run e2e` against `next start` → 51/51 pass on iPhone 13 emulation + desktop: one H1 per page,
+- Unit: `npm test` → 43/43 pass (5 calculators: formulas, published reference values, bracket/band boundaries, invalid input; generated rate tables; UTC dates).
+- E2E: `npm run e2e` against `next start` → 52/52 pass on iPhone 13 emulation + desktop: one H1 per page,
   labelled inputs, no horizontal scroll, results for every calculator, validation errors + focus, Arabic-Indic digits
   (١٠٠٬٠٠٠), reset, share-link prefill, live recalculation, FAQ, real 404 for unknown slugs, zero console errors.
 - Lighthouse 12.6 (mobile, simulated throttling, local server):

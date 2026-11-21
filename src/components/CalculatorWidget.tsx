@@ -43,6 +43,7 @@ export function CalculatorWidget({ id, title }: { id: string; title: string }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setValues(v);
     run(v, false);
+    window.history.replaceState(null, "", window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -63,8 +64,8 @@ export function CalculatorWidget({ id, title }: { id: string; title: string }) {
 
   async function share() {
     const qs = new URLSearchParams(Object.fromEntries(visible.map((f) => [f.name, values[f.name] ?? ""])));
+    // Not written to the address bar: analytics records page URLs, and inputs are salaries/incomes.
     const url = `${window.location.origin}${window.location.pathname}?${qs}`;
-    window.history.replaceState(null, "", url);
     try {
       if (navigator.share) {
         await navigator.share({ title, text: result ? `${result.headline.label}: ${result.headline.value}` : title, url });

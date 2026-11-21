@@ -1,5 +1,18 @@
 import type { CalculatorContent } from "../types.ts";
-import { LAST_UPDATED, SOURCES } from "./rules.ts";
+import { formatNumber as n } from "../../lib/format.ts";
+import { LAST_UPDATED, SERVICE_FEES as F, SOURCES, TARIFF_AUG_2026 as T } from "./rules.ts";
+
+// Built from rules.ts so the table can't drift from the bill calculation.
+const qirsh = (egp: number) => n(Math.round(egp * 100));
+const tariffRows = [
+  ["0–50", `${qirsh(T.p1)} (ثابت رسميًا)`, n(F.b1)],
+  ["51–100", qirsh(T.p2), n(F.b2)],
+  ["0–200 (لمستهلك 101–650)", qirsh(T.p3), n(F.b3)],
+  ["201–350", qirsh(T.p4), n(F.b4)],
+  ["351–650", qirsh(T.p5), n(F.b5)],
+  ["الكل (651–1000)", qirsh(T.p6), n(F.b6)],
+  ["الكل (أكثر من 1000)", qirsh(T.p7), n(F.b7)],
+];
 
 export const content: CalculatorContent = {
   id: "electricity-appliances",
@@ -27,7 +40,7 @@ export const content: CalculatorContent = {
       "أكثر من 1000: الاستهلاك كله بالسعر الأعلى.",
       "بالإضافة لمقابل خدمة عملاء شهري حسب الشريحة (من 1 لـ40 جنيه).",
     ] },
-    { type: "table", head: ["الشريحة", "السعر المستخدم (قرش/ك.و.س)", "خدمة العملاء (جنيه)"], rows: [["0–50", "68 (ثابت رسميًا)", "1"], ["51–100", "95", "2"], ["0–200 (لمستهلك 101–650)", "115", "6"], ["201–350", "172", "11"], ["351–650", "218", "15"], ["الكل (651–1000)", "240", "25"], ["الكل (أكثر من 1000)", "274", "40"]] },
+    { type: "table", head: ["الشريحة", "السعر المستخدم (قرش/ك.و.س)", "خدمة العملاء (جنيه)"], rows: tariffRows },
     { type: "p", text: "تنبيه: وزارة الكهرباء أعلنت زيادة من 1 أغسطس 2026 بمتوسط 12% لكل الشرائح ما عدا الأولى، من غير ما تنشر جدول أسعار تفصيلي. الأسعار في الجدول منشورة صحفيًا، واخترناها لأنها بتطابق أمثلة الفواتير اللي نشرتها الوزارة رسميًا (100 ك.و.س ≈ 82 جنيه، 200 ≈ 230، 300 ≈ 402). علشان كده تكلفة الجنيه تقديرية لحد ما الجهاز ينشر الجدول." },
   ],
   example: {

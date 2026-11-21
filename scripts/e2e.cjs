@@ -1,3 +1,5 @@
+// CommonJS on purpose: the machine-wide Playwright install resolves via require(), not ESM import.
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { chromium, devices } = require("playwright");
 const BASE = process.env.BASE_URL || "http://localhost:3000";
 const enc = (p) => BASE + encodeURI(p);
@@ -55,6 +57,7 @@ const check = (ok, msg) => { console.log((ok ? "PASS " : "FAIL ") + msg); if (!o
   await page.goto(enc("/حاسبة-التأمينات-الاجتماعية") + "?type=employee&year=2027&wage=10000");
   await page.waitForSelector("p.text-3xl");
   check((await page.locator("p.text-3xl").textContent()).includes("1,150"), "share link prefills and computes (2027 → 1,150)");
+  check(!page.url().includes("?"), "inputs removed from the address bar after prefill (kept out of analytics)");
   // live recalculation after first calculate
   await page.fill("#f-wage", "20000");
   check((await page.locator("p.text-3xl").textContent()).includes("2,220"), "live update after input change (capped 19,300 × 11.5% = 2,219.5)");

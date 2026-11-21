@@ -20,7 +20,7 @@ export function formatPercent(rate: number, maxFractionDigits = 2) {
 }
 
 export function formatDateAr(iso: string) {
-  return new Intl.DateTimeFormat(LOCALE, { year: "numeric", month: "long", day: "numeric" }).format(
+  return new Intl.DateTimeFormat(LOCALE, { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }).format(
     new Date(iso + "T00:00:00Z"),
   );
 }

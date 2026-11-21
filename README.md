@@ -48,7 +48,9 @@ scripts/e2e.cjs         Playwright end-to-end checks
 
 ### Updating a rate
 Edit the calculator's `rules.ts` (value, source URL, effective date, `LAST_UPDATED`), adjust the test that pins it,
-run `npm test`. Nothing else changes.
+run `npm test`. The calculation and the rate tables on the page are built from `rules.ts` and update automatically.
+**Also update by hand** any figures quoted in that calculator's `content.ts` prose: `intro`, `metaDescription`,
+`example` and `faqs` (search the file for the old number).
 
 ## Install & run
 
@@ -56,13 +58,13 @@ run `npm test`. Nothing else changes.
 npm install
 ```
 ```bash
-npm test          # 38 unit tests (calculation logic, boundaries, invalid input)
+npm test          # 43 unit tests (calculation logic, boundaries, invalid input)
 ```
 ```bash
-npm run build && npm start   # production build on http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3000 npm run build && npm start   # production build (fails without the URL)
 ```
 ```bash
-npm run e2e       # with the server running: 51 browser checks (mobile + desktop)
+npm run e2e       # with the server running: 52 browser checks (mobile + desktop)
 ```
 
 Requires Node.js ≥ 22.18 (tests use native TypeScript type-stripping; no test framework dependency).
@@ -70,7 +72,7 @@ Requires Node.js ≥ 22.18 (tests use native TypeScript type-stripping; no test 
 ## Deploy
 
 Any Node host or Vercel. Set the env vars from `.env.example` — at minimum `NEXT_PUBLIC_SITE_URL`
-(canonical URLs and sitemap use it; the default is localhost). On Vercel: import the repo, add env vars, deploy.
+(canonical URLs and sitemap use it; a production build without it fails on purpose). On Vercel: import the repo, add env vars, deploy.
 Elsewhere: `npm ci && npm run build && npm start` behind a reverse proxy with HTTPS.
 
 After deploy: verify the domain in Google Search Console (set `NEXT_PUBLIC_GSC_VERIFICATION`, rebuild) and submit
